@@ -20,5 +20,4 @@ class KafkaManager:
             raise RuntimeError("Kafka producer is not initialized.")
         await self.producer.send_and_wait(self.topic, value=str(message).encode("utf-8"))
 
-# kafka_manager = KafkaManager(servers="kafka:9092", topic="applications")
-kafka_manager = KafkaManager(servers="localhost:9092", topic="applications")
+kafka_manager = KafkaManager(servers="kafka:9092", topic="applications")

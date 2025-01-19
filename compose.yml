@@ -19,8 +19,6 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-
-
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
@@ -50,20 +48,17 @@ services:
         condition: service_healthy
     environment:
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   test:
     build: .
-    command: ["pytest", "tests/"]
-    depends_on:
-      app:
-        condition: service_healthy
-      db:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-    environment:
-      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-    entrypoint: ["pytest", "tests/"]
+    command: [ "pytest", "/app/tests" ]
     volumes:
-      - ./tests:/tests
+      - ./app:/app
+    environment:
+      - PYTHONPATH=/app
